@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artur Shaimardanov — Data Scientist | ML & Product Analytics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@300;400;500&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #080a0e;
+    --surface: #0d1117;
+    --border: #1e2530;
+    --gold: #c9a84c;
+    --gold-dim: #8a6c28;
+    --amber: #f0b429;
+    --text: #e8e4dc;
+    --text-muted: #6b7280;
+    --text-dim: #374151;
+    --green: #10b981;
+    --red: #ef4444;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.4;
+  }
+
+  /* GRID LINE BACKGROUND */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: 
+      linear-gradient(rgba(201, 168, 76, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201, 168, 76, 0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* TERMINAL HEADER */
+  .terminal-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 44px;
+    background: rgba(8, 10, 14, 0.92);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    z-index: 100;
+    backdrop-filter: blur(12px);
+  }
+
+  .terminal-bar .dots {
+    display: flex; gap: 6px;
+  }
+  .terminal-bar .dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .dot-red { background: #ef4444; }
+  .dot-yellow { background: #f59e0b; }
+  .dot-green { background: #10b981; }
+
+  .terminal-label {
+    color: var(--text-muted);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+  }
+
+  .terminal-nav {
+    display: flex; gap: 28px;
+  }
+  .terminal-nav a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    transition: color 0.2s;
+  }
+  .terminal-nav a:hover { color: var(--gold); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-left {
+    padding: 120px 48px 80px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-right: 1px solid var(--border);
+  }
+
+  .hero-tag {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-name {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(42px, 5vw, 68px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .hero-name em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 48px;
+  }
+
+  .hero-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    max-width: 420px;
+    margin-bottom: 56px;
+    border-left: 2px solid var(--gold-dim);
+    padding-left: 20px;
+  }
+
+  .hero-links {
+    display: flex; gap: 16px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: var(--gold);
+    color: var(--bg);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: all 0.25s;
+  }
+  .btn-primary:hover {
+    background: var(--amber);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(201, 168, 76, 0.25);
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    transition: all 0.25s;
+  }
+  .btn-outline:hover {
+    border-color: var(--gold-dim);
+    color: var(--gold);
+  }
+
+  /* HERO RIGHT — TERMINAL WIDGET */
+  .hero-right {
+    padding: 120px 48px 80px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .terminal-window {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    animation: slideIn 0.8s ease both;
+  }
+  .terminal-window:nth-child(2) { animation-delay: 0.15s; }
+  .terminal-window:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(24px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .tw-header {
+    background: #111820;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .tw-title {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .tw-status {
+    font-size: 9px;
+    color: var(--green);
+    letter-spacing: 0.15em;
+  }
+
+  .tw-body {
+    padding: 16px;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(30, 37, 48, 0.6);
+  }
+  .stat-row:last-child { border-bottom: none; }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .stat-value {
+    font-size: 13px;
+    color: var(--text);
+  }
+  .stat-value.green { color: var(--green); }
+  .stat-value.gold { color: var(--gold); }
+
+  .skill-bar-wrap { margin-bottom: 12px; }
+  .skill-bar-wrap:last-child { margin-bottom: 0; }
+
+  .skill-bar-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-size: 10px;
+  }
+  .skill-bar-label span:first-child { color: var(--text-muted); }
+  .skill-bar-label span:last-child { color: var(--gold); }
+
+  .skill-bar-track {
+    height: 2px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-bar-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    animation: fillBar 1.2s ease both;
+    animation-delay: 0.5s;
+  }
+  @keyframes fillBar {
+    from { width: 0 !important; }
+  }
+
+  /* SECTIONS */
+  section {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+  }
+
+  .section-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 96px 64px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 3.5vw, 52px);
+    font-weight: 400;
+    line-height: 1.15;
+    margin-bottom: 64px;
+    max-width: 600px;
+  }
+
+  /* EXPERTISE GRID */
+  .expertise-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 80px;
+  }
+
+  .expertise-card {
+    background: var(--bg);
+    padding: 40px 32px;
+    transition: background 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .expertise-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold-dim), transparent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s;
+  }
+  .expertise-card:hover::before { transform: scaleX(1); }
+  .expertise-card:hover { background: var(--surface); }
+
+  .expertise-icon {
+    font-size: 28px;
+    margin-bottom: 20px;
+    display: block;
+  }
+  .expertise-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .expertise-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* PROJECTS */
+  .projects-list {
+    display: grid;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .project-item {
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    align-items: center;
+    padding: 32px;
+    gap: 32px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s;
+  }
+  .project-item:hover { background: var(--surface); }
+
+  .project-number {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+  }
+
+  .project-info {}
+  .project-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--text);
+    transition: color 0.2s;
+  }
+  .project-item:hover .project-name { color: var(--gold); }
+
+  .project-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 580px;
+  }
+
+  .project-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .tag {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    border: 1px solid var(--gold-dim);
+    padding: 4px 10px;
+    border-radius: 1px;
+  }
+
+  .project-arrow {
+    font-size: 18px;
+    color: var(--text-dim);
+    transition: all 0.2s;
+    margin-left: 24px;
+  }
+  .project-item:hover .project-arrow {
+    color: var(--gold);
+    transform: translate(4px, -4px);
+  }
+
+  /* CONTACT */
+  .contact-section {
+    background: var(--surface);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .contact-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 4vw, 60px);
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  .contact-headline em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  .contact-text {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 40px;
+    max-width: 400px;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.25s;
+    background: var(--bg);
+  }
+  .contact-link:hover {
+    border-color: var(--gold-dim);
+    background: rgba(201, 168, 76, 0.04);
+    transform: translateX(4px);
+  }
+  .contact-link-icon {
+    font-size: 20px;
+    width: 40px;
+    text-align: center;
+  }
+  .contact-link-info {}
+  .contact-link-label {
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .contact-link-value {
+    font-size: 13px;
+    color: var(--text-muted);
+    transition: color 0.2s;
+  }
+  .contact-link:hover .contact-link-value { color: var(--gold); }
+
+  /* DECORATIVE TICKER */
+  .ticker-wrap {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 12px 0;
+    background: #0a0c10;
+  }
+  .ticker {
+    display: inline-block;
+    animation: ticker 30s linear infinite;
+  }
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+  .ticker-item {
+    display: inline-block;
+    margin: 0 32px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .ticker-item.highlight { color: var(--gold-dim); }
+
+  /* FOOTER */
+  footer {
+    padding: 32px 64px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+  .footer-copy {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+  }
+  .footer-handle {
+    font-size: 10px;
+    color: var(--gold-dim);
+    letter-spacing: 0.2em;
+  }
+
+  /* ANIMATIONS */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* HERO ENTRANCE */
+  .hero-left > * {
+    animation: heroFadeIn 0.9s ease both;
+  }
+  .hero-left > *:nth-child(1) { animation-delay: 0.1s; }
+  .hero-left > *:nth-child(2) { animation-delay: 0.2s; }
+  .hero-left > *:nth-child(3) { animation-delay: 0.3s; }
+  .hero-left > *:nth-child(4) { animation-delay: 0.4s; }
+  .hero-left > *:nth-child(5) { animation-delay: 0.5s; }
+
+  @keyframes heroFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* CURSOR GLOW */
+  .glow-cursor {
+    position: fixed;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201, 168, 76, 0.06) 0%, transparent 70%);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    transition: transform 0.1s ease;
+  }
+
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .expertise-grid { grid-template-columns: 1fr; }
+    .project-item { grid-template-columns: 1fr; }
+    .project-number { display: none; }
+    .project-tags { justify-content: flex-start; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .section-inner { padding: 64px 24px; }
+    .hero-left { padding: 100px 24px 60px; }
+    footer { flex-direction: column; gap: 12px; padding: 24px; }
+    .terminal-nav { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow-cursor" id="glowCursor"></div>
+
+<!-- TERMINAL NAV -->
+<header class="terminal-bar">
+  <div class="dots">
+    <span class="dot-red"></span>
+    <span class="dot-yellow"></span>
+    <span class="dot-green"></span>
+  </div>
+  <span class="terminal-label">ARTUR SHAIMARDANOV — PORTFOLIO v2.0</span>
+  <nav class="terminal-nav">
+    <a href="#expertise">Expertise</a>
+    <a href="#experience">Experience</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+    <a href="Artur_Shaimardanov_CV.pdf" download style="color:var(--gold); border: 1px solid var(--gold-dim); padding: 4px 12px;">↓ CV</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">Open to Opportunities · GMT+4</div>
+    <h1 class="hero-name">Artur<br><em>Shaimardanov</em></h1>
+    <p class="hero-title">Data Scientist | ML & Product Analytics</p>
+    <p class="hero-desc">
+      Senior Data Scientist who builds decision systems, not just dashboards. I design KPI frameworks, run statistically rigorous A/B tests, and ship ML models that impact forecasting accuracy, operational efficiency, and decision quality. 6+ years experience.
+    </p>
+    <div class="hero-links">
+      <a href="https://github.com/Gobberz" target="_blank" class="btn-primary">↗ GitHub</a>
+      <a href="https://www.linkedin.com/in/gobberz" target="_blank" class="btn-outline">LinkedIn</a>
+      <a href="Artur_Shaimardanov_CV.pdf" download class="btn-outline" style="border-color:var(--gold-dim); color:var(--gold);">↓ Download CV</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <!-- SKILLS WIDGET -->
+    <div class="terminal-window">
+      <div class="tw-header">
+        <span class="tw-title">Skill Matrix</span>
+        <span class="tw-status">● LIVE</span>
+      </div>
+      <div class="tw-body">
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-label"><span>Python / SQL</span><span>95%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:95%"></div></div>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-label"><span>A/B Testing & Experimentation</span><span>93%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:93%"></div></div>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-label"><span>Statistical Modeling</span><span>91%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:91%"></div></div>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-label"><span>ML (XGBoost / LightGBM)</span><span>87%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:87%"></div></div>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-label"><span>Forecasting (ARIMA / Prophet)</span><span>85%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:85%"></div></div>
+        </div>
+        <div class="skill-bar-wrap">
+          <div class="skill-bar-label"><span>BI (Power BI / Superset)</span><span>88%</span></div>
+          <div class="skill-bar-track"><div class="skill-bar-fill" style="width:88%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS WIDGET -->
+    <div class="terminal-window">
+      <div class="tw-header">
+        <span class="tw-title">Profile Stats</span>
+        <span class="tw-status">● VERIFIED</span>
+      </div>
+      <div class="tw-body">
+        <div class="stat-row">
+          <span class="stat-label">Experience</span>
+          <span class="stat-value gold">6+ years</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Current Role</span>
+          <span class="stat-value green">Quantum Brains</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Education</span>
+          <span class="stat-value">PhD · SPbU</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Focus Area</span>
+          <span class="stat-value">ML · A/B · Forecasting</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Location</span>
+          <span class="stat-value">GMT+4 · Open to Remote</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span class="ticker-item">Python</span>
+    <span class="ticker-item highlight">◆ NLP & Text Mining</span>
+    <span class="ticker-item">Pandas · NumPy · Scikit-learn</span>
+    <span class="ticker-item highlight">◆ Machine Learning</span>
+    <span class="ticker-item">Monte Carlo Simulation</span>
+    <span class="ticker-item highlight">◆ Geo-Analysis</span>
+    <span class="ticker-item">Data Visualization</span>
+    <span class="ticker-item highlight">◆ Behavioural Analytics</span>
+    <span class="ticker-item">Process Automation</span>
+    <span class="ticker-item highlight">◆ Jupyter · Flask</span>
+    <span class="ticker-item">Statistical Testing</span>
+    <span class="ticker-item highlight">◆ AI Game Agents</span>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="ticker-item">Python</span>
+    <span class="ticker-item highlight">◆ NLP & Text Mining</span>
+    <span class="ticker-item">Pandas · NumPy · Scikit-learn</span>
+    <span class="ticker-item highlight">◆ Machine Learning</span>
+    <span class="ticker-item">Monte Carlo Simulation</span>
+    <span class="ticker-item highlight">◆ Geo-Analysis</span>
+    <span class="ticker-item">Data Visualization</span>
+    <span class="ticker-item highlight">◆ Behavioural Analytics</span>
+    <span class="ticker-item">Process Automation</span>
+    <span class="ticker-item highlight">◆ Jupyter · Flask</span>
+    <span class="ticker-item">Statistical Testing</span>
+    <span class="ticker-item highlight">◆ AI Game Agents</span>
+  </div>
+</div>
+
+<!-- EXPERTISE -->
+<section id="expertise">
+  <div class="section-inner">
+    <div class="section-label">What I do</div>
+    <h2 class="section-title fade-up">Areas of<br>Deep <em style="font-style:italic; color: var(--gold)">Expertise</em></h2>
+
+    <div class="expertise-grid fade-up">
+      <div class="expertise-card">
+        <span class="expertise-icon">🔤</span>
+        <div class="expertise-name">NLP & Text Mining</div>
+        <p class="expertise-desc">Natural language processing pipelines, topic modeling, linguistic pattern analysis. Applied to complex literary and real-world corpora — including full-scale analysis of Joyce's Ulysses.</p>
+      </div>
+      <div class="expertise-card">
+        <span class="expertise-icon">🐍</span>
+        <div class="expertise-name">Python Engineering</div>
+        <p class="expertise-desc">Production-grade scripts for data pipelines, automation of complex calculation chains, interactive dashboards with Flask backends and rich analytics UIs.</p>
+      </div>
+      <div class="expertise-card">
+        <span class="expertise-icon">🤖</span>
+        <div class="expertise-name">Machine Learning & Simulation</div>
+        <p class="expertise-desc">Monte Carlo simulations, ML-powered decision engines, minimax AI for game theory, and predictive modeling applied to real-world analytical problems.</p>
+      </div>
+      <div class="expertise-card">
+        <span class="expertise-icon">🌍</span>
+        <div class="expertise-name">Geo & Behavioural Analytics</div>
+        <p class="expertise-desc">Spatial data analysis, geo-visualisation, and behavioural pattern research. Driven by genuine curiosity — each project starts with a real question, not a textbook assignment.</p>
+      </div>
+      <div class="expertise-card">
+        <span class="expertise-icon">📊</span>
+        <div class="expertise-name">Statistical Analysis</div>
+        <p class="expertise-desc">Hypothesis testing, A/B experiments, cohort analysis, and statistical inference. Rigorous methodology applied to datasets across finance, behaviour, and everyday life.</p>
+      </div>
+      <div class="expertise-card">
+        <span class="expertise-icon">♟️</span>
+        <div class="expertise-name">Algorithmic Thinking</div>
+        <p class="expertise-desc">Strategic problem decomposition inspired by chess and game theory. Building software that handles edge cases systematically — not just the happy path.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-inner">
+    <div class="section-label">Selected Work</div>
+    <h2 class="section-title fade-up">Projects &<br><em style="font-style:italic; color:var(--gold)">Repositories</em></h2>
+
+    <div class="projects-list fade-up">
+      <a href="https://github.com/Gobberz/My-Grand-Projects" target="_blank" class="project-item">
+        <span class="project-number">01a</span>
+        <div class="project-info">
+          <div class="project-name">NLP Ulysses</div>
+          <p class="project-desc">Full NLP analysis of James Joyce's Ulysses — text mining, topic modeling, linguistic pattern extraction, and semantic structure analysis on one of the most complex literary works in English.</p>
+          <div class="project-tags" style="margin-top:12px; justify-content:flex-start;">
+            <span class="tag">Python</span><span class="tag">NLP</span><span class="tag">NLTK</span><span class="tag">Topic Modeling</span>
+          </div>
+        </div>
+        <span class="project-arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/Gobberz/My-Grand-Projects" target="_blank" class="project-item">
+        <span class="project-number">01b</span>
+        <div class="project-info">
+          <div class="project-name">Operational Calculators</div>
+          <p class="project-desc">Calculators for complex operational processes — multi-condition chains, robust edge-case handling, and automation of workflows that were previously done manually.</p>
+          <div class="project-tags" style="margin-top:12px; justify-content:flex-start;">
+            <span class="tag">Python</span><span class="tag">Flask</span><span class="tag">Automation</span>
+          </div>
+        </div>
+        <span class="project-arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/Gobberz/games" target="_blank" class="project-item">
+        <span class="project-number">02</span>
+        <div class="project-info">
+          <div class="project-name">Games & AI Agents</div>
+          <p class="project-desc">Four complete games with AI opponents: Carcassonne (MinimaxBot + analytics), AI Snake (autonomous agent), ML Blackjack (Monte Carlo + ML decision engine), Chess Opening Trainer (15 openings, tactical puzzles).</p>
+          <div class="project-tags" style="margin-top:12px; justify-content:flex-start;">
+            <span class="tag">Carcassonne</span><span class="tag">AI Snake</span><span class="tag">ML Blackjack</span><span class="tag">Chess</span>
+          </div>
+        </div>
+        <span class="project-arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/Gobberz/My-own-DA-projects" target="_blank" class="project-item">
+        <span class="project-number">03</span>
+        <div class="project-info">
+          <div class="project-name">Own DA Projects</div>
+          <p class="project-desc">Personal analytical investigations spanning a wide spectrum — geo-analysis and spatial data, behavioural pattern research, statistical tests on everyday phenomena. Each project starts with a real question that genuinely fascinated me.</p>
+          <div class="project-tags" style="margin-top:12px; justify-content:flex-start;">
+            <span class="tag">Geo-Analysis</span><span class="tag">Behavioural</span><span class="tag">Statistics</span><span class="tag">EDA</span>
+          </div>
+        </div>
+        <span class="project-arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/Gobberz/Projects-of-automatization-process" target="_blank" class="project-item">
+        <span class="project-number">04</span>
+        <div class="project-info">
+          <div class="project-name">Process Automation</div>
+          <p class="project-desc">Python scripts that accelerated workflows and handled complex calculation chains — transforming multi-step manual processes into reliable, reusable automation tools.</p>
+          <div class="project-tags" style="margin-top:12px; justify-content:flex-start;">
+            <span class="tag">Python</span><span class="tag">Automation</span><span class="tag">Scripting</span>
+          </div>
+        </div>
+        <span class="project-arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/Gobberz/Yandex.Praktikum-DA-Projects" target="_blank" class="project-item">
+        <span class="project-number">05</span>
+        <div class="project-info">
+          <div class="project-name">Yandex Praktikum · DA Curriculum</div>
+          <p class="project-desc">Data analyst training projects covering the full lifecycle: data cleaning, statistical analysis, A/B testing, cohort analysis, and business insights reporting.</p>
+          <div class="project-tags" style="margin-top:12px; justify-content:flex-start;">
+            <span class="tag">Jupyter</span><span class="tag">Statistics</span><span class="tag">A/B Testing</span>
+          </div>
+        </div>
+        <span class="project-arrow">↗</span>
+      </a>
+
+      <a href="https://github.com/Gobberz/Data-Camp-Projects-Data-Analysis-" target="_blank" class="project-item">
+        <span class="project-number">06</span>
+        <div class="project-info">
+          <div class="project-name">DataCamp Analytics Projects</div>
+          <p class="project-desc">Platform projects approached independently — often deviating from standard solutions to explore non-obvious analytical paths and practice creative problem decomposition.</p>
+          <div class="project-tags" style="margin-top:12px; justify-content:flex-start;">
+            <span class="tag">Python</span><span class="tag">NumPy</span><span class="tag">Pandas</span>
+          </div>
+        </div>
+        <span class="project-arrow">↗</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="contact-section">
+  <div class="section-inner">
+    <div class="contact-grid">
+      <div>
+        <div class="section-label">Get in touch</div>
+        <h2 class="contact-headline fade-up">Let's build<br>something <em>precise</em></h2>
+        <p class="contact-text fade-up">
+          Open to quantitative analyst roles, risk engineering positions, and data science projects where analytical depth genuinely matters. If you value rigor over shortcuts — let's talk.
+        </p>
+        <a href="https://github.com/Gobberz" target="_blank" class="btn-primary" style="display:inline-flex;">
+          ↗ View All Work on GitHub
+        </a>
+      </div>
+      <div class="contact-links fade-up">
+        <a href="https://github.com/Gobberz" target="_blank" class="contact-link">
+          <span class="contact-link-icon">⌥</span>
+          <div class="contact-link-info">
+            <div class="contact-link-label">GitHub</div>
+            <div class="contact-link-value">github.com/Gobberz</div>
+          </div>
+        </a>
+        <a href="https://www.linkedin.com/in/gobberz" target="_blank" class="contact-link">
+          <span class="contact-link-icon">in</span>
+          <div class="contact-link-info">
+            <div class="contact-link-label">LinkedIn</div>
+            <div class="contact-link-value">linkedin.com/in/gobberz</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-copy">© 2026 Arthur Shaymardanov. All rights reserved.</span>
+  <span class="footer-handle">@Gobberz</span>
+</footer>
+
+<script>
+  // Cursor glow
+  const cursor = document.getElementById('glowCursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+
+  // Fade-up on scroll
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
